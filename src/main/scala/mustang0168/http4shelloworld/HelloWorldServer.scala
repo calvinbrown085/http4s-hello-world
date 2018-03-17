@@ -13,6 +13,8 @@ object HelloWorldServer extends StreamApp[IO] with Http4sDsl[IO] {
   val service = HttpService[IO] {
     case GET -> Root =>
       Ok("Welcome to Kubernetes!")
+    case GET -> Root / "ping" =>
+      Ok("Pong")
     case GET -> Root / "hello" / name =>
       Ok(Json.obj("message" -> Json.fromString(s"Hello, ${name}")))
   }
