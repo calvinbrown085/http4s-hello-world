@@ -1,0 +1,25 @@
+sudo: required
+language: scala
+
+scala:
+  - 2.12.4
+  - 2.11.12
+
+before_script:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+jdk:
+  - oraclejdk8
+
+services:
+  - docker
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.coursier/cache
+    - $HOME/.sbt
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION test
+  - sbt dockerBuildAndPush
