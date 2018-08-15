@@ -1,11 +1,14 @@
 package com.example.http4shelloworld
 
+import cats.implicits._
 import cats.effect.IO
+import fs2.Stream
 import fs2.StreamApp
 import io.circe._
 import org.http4s._
 import org.http4s.circe._
 import org.http4s.dsl.Http4sDsl
+import org.http4s.server.prometheus.PrometheusExportService
 import org.http4s.server.blaze.BlazeBuilder
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -19,9 +22,12 @@ object HelloWorldServer extends StreamApp[IO] with Http4sDsl[IO] {
       Ok(Json.obj("message" -> Json.fromString(s"Hello, ${name}")))
   }
 
-  def stream(args: List[String], requestShutdown: IO[Unit]) =
-    BlazeBuilder[IO]
-      .bindHttp(8080, "0.0.0.0")
-      .mountService(service, "/")
-      .serve
+  def stream(args: List[String], requestShutdown: IO[Unit]) = {
+    for {
+      pes <- Stream.eval(PrometheusExportService.build[IO])
+      prometheusService = PrometheusExportService.service[IO](pes.collectorRegistry)
+      s <- BlazeBuilder[IO].bindHttp(8080, "0.0.0.0").mountService(service <+> prometheusService, "/").serve
+    } yield s
+  }
+
 }

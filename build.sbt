@@ -1,6 +1,6 @@
 
 
-val Http4sVersion = "0.18.2"
+val Http4sVersion = "0.18.16"
 val Specs2Version = "4.0.3"
 val LogbackVersion = "1.2.3"
 
@@ -10,10 +10,11 @@ lazy val root = (project in file("."))
   .settings(
     organization := "mustang0168",
     name := "http4s-hello-world",
-    version := "2.0.0",
+    version := "2.1.0",
     scalaVersion := "2.12.4",
     libraryDependencies ++= Seq(
       "org.http4s"      %% "http4s-blaze-server" % Http4sVersion,
+      "org.http4s"      %% "http4s-prometheus-server-metrics"        % Http4sVersion,
       "org.http4s"      %% "http4s-circe"        % Http4sVersion,
       "org.http4s"      %% "http4s-dsl"          % Http4sVersion,
       "org.specs2"     %% "specs2-core"          % Specs2Version % "test",
